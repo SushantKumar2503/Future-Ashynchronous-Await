@@ -1,0 +1,100 @@
+import'package:flutter/material.dart';
+import 'dart:math';
+
+void main(){
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget{
+  const MyApp({Key?key}):super(key: key);
+
+  @override
+  Widget build(BuildContext context){
+    return MaterialApp(home:LoginScreen());
+  }
+}
+
+class LoginScreen extends StatefulWidget{
+  LoginScreen ({Key?key}):super(key: key);
+
+  @override
+  State<LoginScreen>createState()=>_LoginScreenState();
+}
+class _LoginScreenState extends State<LoginScreen>{
+  String  WhatIamDoing="Cooking breakfast";
+  @override
+  Widget build(BuildContext context){
+    return Scaffold(
+       body: FutureBuilder(
+        future: getAllBloodBanks(),
+        builder:(context,snapshot){
+          if(snapshot.connectionState==ConnectionState.waiting){
+            return CircularProgressIndicator();
+          }
+          if(snapshot.hasData){
+            return Center(
+              child: ListView(children: [
+                ElevatedButton(
+                  child: Text(WhatIamDoing),
+                  onPressed: doChores,
+                ),
+                ...drawCards(snapshot.data as List<String>)
+              ],
+              ),
+            );
+          }
+         return Container();
+        }
+       ),
+    );
+  }
+  void myFunction(){}
+  List<Widget>drawCards(List<String> bloodBanks){
+    List<Widget> myWidgets=[];
+    for(int i=0;i<bloodBanks.length;i++){
+      myWidgets.add(Text(bloodBanks[i]));
+    }
+    return myWidgets;
+  }
+  Future<List<String>>getAllBloodBanks()  async{
+    var time=await Future.delayed(Duration(seconds: 2));
+    return[
+      "Red Cross Blood Bank",
+      "Rajiv Gandhi Blood Bank",
+      "Modi Ji Blood Bank",
+    ];
+  }
+  void doChores(){
+    print("Let's Start");
+
+    String result=WhatIamDoing;
+
+    var myFuture =Future.delayed(Duration(seconds: 3),(){
+      
+      Random rand=Random();
+      int res=rand.nextInt(3);
+      if(res==0)
+      throw Exception();
+     else  if(res==1){
+          result="Vegetables not found";
+      }
+      else{
+        result="Done Cooking";
+      }
+      return "Rsult : $result";
+    });
+    setState(() {
+      WhatIamDoing="Learning from the mentor";
+    });
+
+    myFuture.then((result){
+        setState(() {
+          WhatIamDoing="Done Cooking";
+        });
+    });
+    myFuture.catchError((error){
+       WhatIamDoing="Oh! gas is not available";
+    });
+  }
+}
+
